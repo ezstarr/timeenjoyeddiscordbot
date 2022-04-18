@@ -8,7 +8,7 @@ followed by a 5 letter word to submit a guess.  It will generate an image of
 the game board and upload that to Discord.  Keep using that command until you either
 win or lose.
 
-![Example Image](https://github.com/scottserven/disgamebot/blob/master/sample/sample.png)
+![Example Image](https://github.com/scottserven/disgamebot/blob/main/sample/sample.png)
 
 It is structured so other games may be added to it at a later time.
 
