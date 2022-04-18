@@ -1,3 +1,4 @@
+import io
 import random
 import discord
 from PIL import Image, ImageDraw, ImageFont
@@ -105,8 +106,7 @@ class WordleGame:
     def render(self):
         """
         Render an image file that represents the current state of the game board.
-        Would be nice if we didn't have to save this to a file, but the Discord API seems to only allow that.
-        :return: nothing
+        :return: the Image instance
         """
         board_padding = 20
         cell_padding: int = 3
@@ -150,8 +150,7 @@ class WordleGame:
                           font=message_font)
                 y1 += text_size[1] + (cell_padding * 2)
 
-        with open("test.jpg", "w") as f:
-            image.save(f, "JPEG")
+        return image
 
     def _check_valid_word(self, guess):
         """
@@ -257,10 +256,12 @@ class WordleGameHandler:
         :param message: a Discord message object
         :return: nothing
         """
-        game.render()
-        with open('test.jpg', 'rb') as fh:
-            f = discord.File(fh, filename='test.jpg')
-            game.game_board_message = await message.channel.send(file=f)
+        image = game.render()
+        arr = io.BytesIO()
+        image.save(arr, format="JPEG")
+        arr.seek(0)
+        f = discord.File(arr, filename='wordle_board.jpg')
+        game.game_board_message = await message.channel.send(file=f)
 
     async def process_message(self, message):
         """
