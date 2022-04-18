@@ -94,7 +94,6 @@ class WordleGame:
         self.solution = self._pick_random_word()
         self.game_author = game_author
         self.game_state = WordleGameState()
-        print(f"Solution: {self.solution}")
 
     def _pick_random_word(self):
         """
@@ -286,7 +285,6 @@ class WordleGameHandler:
         # if a game isn't active, just start a new one
         game = self.active_games.get(message.channel.id)
         if not game or game.game_state.is_over:
-            print(message.channel.id)
             game = WordleGame(message.author)
             self.active_games[message.channel.id] = game
 
