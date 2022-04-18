@@ -13,12 +13,13 @@ YELLOW = "#c9b458"
 BLACK = "#000000"
 RED = "#cc0000"
 
-tile_font = ImageFont.truetype('FreeSans', 40)  # TODO, need to use a font that can be distributed
-message_font = ImageFont.truetype('FreeSans', 35)
-
 # our data directory is under the source file path
 source_path = Path(__file__).resolve()
 source_dir = source_path.parent
+
+tile_font = ImageFont.truetype(f"{source_dir}/fonts/Roboto-Regular.ttf", 40)
+message_font = ImageFont.truetype(f"{source_dir}/fonts/Roboto-Regular.ttf", 35)
+
 
 dictionary = []
 with open(f"{source_dir}/data/dictionary.txt", "r") as dictionary_file:
@@ -129,7 +130,7 @@ class WordleGame:
 
                 # center the letter in the tile
                 draw.text(xy=(x1 + (block_size - text_size[0]) / 2 - (cell_padding / 2),
-                              y1 + (block_size - text_size[1]) / 2 - (cell_padding / 2)),
+                              y1 + (block_size - text_size[1]) / 2 - cell_padding),
                           text=block.letter.upper(),
                           font=tile_font
                           )
