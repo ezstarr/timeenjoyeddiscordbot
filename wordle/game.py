@@ -209,6 +209,9 @@ class WordleGame:
             submitter = self.game_state.submission_author.nick or self.game_state.submission_author.name
             self.game_state.current_message = f"{submitter}\nWins in {self.game_state.guess_count}!"
             self.game_state.is_over = True
+            return True
+        else:
+            return False
 
     def _check_max_guesses(self):
         """
