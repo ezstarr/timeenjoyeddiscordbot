@@ -1,0 +1,6 @@
+env/.env
+*.jpg
+*.iml
+venv/
+.idea/
+**/*.pyc
