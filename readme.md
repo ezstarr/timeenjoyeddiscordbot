@@ -12,6 +12,12 @@ win or lose.
 
 It is structured so other games may be added to it at a later time.
 
+## Try It Out
+There is a test discord server running this bot if anybody wants to see it in action:
+
+[DisGameBot's Test Server](https://discord.gg/42Cfxrw9)
+
+
 ## Getting Started
 
 ### Install Dependencies
