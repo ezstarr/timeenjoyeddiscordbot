@@ -1,29 +1,29 @@
+import logging
 import dotenv
 import discord
-from wordle.game import WordleGameHandler
 
-# List of registered game handlers, so this bot could handle more than one
-game_handlers = [
-    WordleGameHandler()
-]
-
-client = discord.Client()
-
-@client.event
-async def on_ready():
-    pass
+logger = logging.getLogger(__name__)
 
 
-@client.event
-async def on_message(message):
-    # ignore messages from the bot itself
-    if message.author == client.user:
-        return
+def run_interaction_bot():
+    from discord_slash import SlashCommand
+    from discord.ext import commands
 
-    for game_handler in game_handlers:
-        if message.content.lower().startswith(game_handler.command_prefix.lower()):
-            await game_handler.process_message(message)
+    config = dotenv.dotenv_values("env/.env")
+
+    bot = commands.Bot(command_prefix='!', self_bot=True, intents=discord.Intents.all())
+    SlashCommand(bot, sync_commands=True)
+
+    @bot.event
+    async def on_ready():
+        logger.info(f'{bot.user} has logged in.')
+
+    bot.load_extension("wordle.cog")
+    bot.run(config['BOT_TOKEN'])
 
 
-config = dotenv.dotenv_values("env/.env")
-client.run(config['BOT_TOKEN'])
+try:
+    run_interaction_bot()
+except Exception as ex:
+    logger.error(f"Exception occurred: {ex}")
+
