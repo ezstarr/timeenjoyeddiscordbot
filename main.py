@@ -1,5 +1,6 @@
 import dotenv
 import discord
+import os
 from wordle.game import WordleGameHandler
 
 # List of registered game handlers, so this bot could handle more than one
@@ -24,6 +25,5 @@ async def on_message(message):
         if message.content.lower().startswith(game_handler.command_prefix.lower()):
             await game_handler.process_message(message)
 
-dotenv.load_dotenv()
-config = dotenv.dotenv_values("env/.env")
-client.run(config['BOT_TOKEN'])
+dotenv.load_dotenv("env/.env")
+client.run(os.getenv('BOT_TOKEN'))
