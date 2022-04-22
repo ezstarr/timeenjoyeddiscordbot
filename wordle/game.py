@@ -288,6 +288,3 @@ class WordleGameHandler:
         if prior_message:
             await prior_message.delete()
 
-
-
-
