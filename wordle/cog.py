@@ -1,4 +1,4 @@
-import dotenv
+import os
 from .game import WordleGameHandler
 from discord.ext.commands import Bot, Cog
 from discord_slash import cog_ext, SlashContext
@@ -12,11 +12,10 @@ class WordleCog(Cog):
         self.game_handler = WordleGameHandler()
 
     guild_ids = []
-    config = dotenv.dotenv_values("env/.env")  # could probably just move this to a share module
-    if ',' in config['GUILD_IDS']:
-        guild_ids = [int(guild_id) for guild_id in config['GUILD_IDS'].split(',')]
+    if ',' in os.getenv('GUILD_IDS'):
+        guild_ids = [int(guild_id) for guild_id in os.getenv('GUILD_IDS').split(',')]
     else:
-        guild_ids = [int(config['GUILD_IDS'])]
+        guild_ids = [int(os.getenv('GUILD_IDS'))]
 
     @cog_ext.cog_slash(name="wordle",
                        description="Submit a guess for the current Wordle game.  If there is no active game, a new one will be started.",

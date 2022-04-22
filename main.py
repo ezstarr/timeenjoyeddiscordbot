@@ -1,8 +1,10 @@
 import logging
 import dotenv
 import discord
+import os
 
 logger = logging.getLogger(__name__)
+dotenv.load_dotenv("env/.env")
 
 
 def run_interaction_bot():
@@ -19,7 +21,7 @@ def run_interaction_bot():
         logger.info(f'{bot.user} has logged in.')
 
     bot.load_extension("wordle.cog")
-    bot.run(config['BOT_TOKEN'])
+    bot.run(os.getenv('BOT_TOKEN'))
 
 
 try:
