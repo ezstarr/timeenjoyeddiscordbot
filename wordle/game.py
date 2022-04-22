@@ -1,9 +1,12 @@
 import io
+import logging
 import random
 import discord
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
+from discord_slash import SlashContext
 
+logger = logging.getLogger(__name__)
 
 """
 Global variables that we don't want to repeatedly instantiate
@@ -250,12 +253,12 @@ class WordleGameHandler:
         # map of channel id -> game instance, assumes one active game per channel
         self.active_games = {}
 
-    async def _update_board(self, game, message):
+    async def _update_board(self, game: WordleGame, ctx: SlashContext):
         """
         Uploads the latest game board image to Discord, and keeps track of the new post in case we need to remove
         it later.
         :param game: a valid WordleGame instance
-        :param message: a Discord message object
+        :param ctx: a SlashContext object
         :return: nothing
         """
         image = game.render()
@@ -263,39 +266,28 @@ class WordleGameHandler:
         image.save(arr, format="JPEG")
         arr.seek(0)
         f = discord.File(arr, filename='wordle_board.jpg')
-        game.game_board_message = await message.channel.send(file=f)
+        game.game_board_message = await ctx.send(file=f)
 
-    async def process_message(self, message):
-        """
-        Process any messages from Discord that matched the self.command_prefix
-        :param message: a Discord message object
-        :return: nothing
-        """
-        # always delete the command message the user submitted, to keep the channel clean
-        await message.channel.delete_messages([message])
-
-        # display some help if they only enter !wordle
-        if ' ' not in message.content:
-            await message.channel.send('type !wordle followed by a 5 letter word to submit a guess.  A new game will automatically start if one is not already in-progress')
-            return
-
-        # if there was something after !wordle, that would be a word guess
-        guess = message.content.split(' ')[1].lower()
+    async def process_guess(self, ctx: SlashContext, guess):
+        logger.info(f"process_guess: author: {ctx.author}, channel: {ctx.channel_id}, guess: {guess}")
 
         # if a game isn't active, just start a new one
-        game = self.active_games.get(message.channel.id)
+        game = self.active_games.get(ctx.channel_id)
         if not game or game.game_state.is_over:
-            game = WordleGame(message.author)
-            self.active_games[message.channel.id] = game
+            game = WordleGame(ctx.author)
+            logger.info(f"New game started for channel: {ctx.channel_id}, with solution: {game.solution}")
+            self.active_games[ctx.channel_id] = game
 
         # Check the users guess, update the board, and post it to discord
-        game.submit_guess(guess, message.author)
+        game.submit_guess(guess, ctx.author)
         prior_message = game.game_board_message
-        await self._update_board(game, message)
+        await self._update_board(game, ctx)
 
         # If there was a prior board displayed for this game, delete that image.  We don't want to keep prior boards
         # around for the current game, only the final one
         if prior_message:
-            await message.channel.delete_messages([prior_message])
+            await prior_message.delete()
+
+
 
 
