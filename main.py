@@ -4,14 +4,12 @@ import discord
 import os
 
 logger = logging.getLogger(__name__)
-dotenv.load_dotenv("env/.env")
+dotenv.load_dotenv(".env")
 
 
 def run_interaction_bot():
     from discord_slash import SlashCommand
     from discord.ext import commands
-
-    config = dotenv.dotenv_values("env/.env")
 
     bot = commands.Bot(command_prefix='!', self_bot=True, intents=discord.Intents.all())
     SlashCommand(bot, sync_commands=True)
