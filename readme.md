@@ -33,7 +33,10 @@ need to be registered with Discord first.
 
 2) Click **Reset Token**.  This will show your **Bot Token**.  Copy this somewhere, you will need it when running the bot.  If you lose it, you'll need to repeat this step and the ones after it again.
 
-3) Under **Privileged Gateway Intents**, ## Todo
+3) Under **Privileged Gateway Intents**, enable:
+   * Presence Intent
+   * Server Members Intent
+   * Message Content Intent
 
 ### Step 3 - Grant Bot Permissions
 1) Click the **OAuth2** menu at the left, then **URL Generator**.
