@@ -1,9 +1,10 @@
 import logging
 import discord
+import dotenv
 import os
 
 logger = logging.getLogger(__name__)
-# dotenv.load_dotenv(".env")
+dotenv.load_dotenv(".env")
 
 
 def run_interaction_bot():
