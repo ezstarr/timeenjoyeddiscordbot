@@ -64,8 +64,10 @@ To deploy to Heroku, clone this repo, and from within the repo folder:
 ```shell
 heroku login
 heroku create [some unique app name]
+heroku addons:create heroku-postgresql:hobby-dev
 heroku config:set BOT_TOKEN=[your Discord Bot Token]
 heroku config:set GUILD_IDS=[your Discord Server ID]
+heroku config:set STORAGE_TYPE=POSTGRES
 git push heroku main 
 ```
 
