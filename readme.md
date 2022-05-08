@@ -3,7 +3,7 @@
 
 This was just a quick side project to have fun with.  
 
-It only has a Wordle clone coded into it.  To play the game, type !wordle 
+It only has a Wordle clone coded into it.  To play the game, type /wordle 
 followed by a 5 letter word to submit a guess.  It will generate an image of 
 the game board and upload that to Discord.  Keep using that command until you either
 win or lose.
