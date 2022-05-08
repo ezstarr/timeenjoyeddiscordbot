@@ -255,17 +255,21 @@ class WordleGame:
         # handle the case where a solution contains multiples of the same character, and we don't want to match on all
         # of them unless the user also has multiples of the same letter.
         solution = self.game_state.solution
+
+        # Find exact match tiles first, those will be green regardless of order, to handle cases where the user
+        # guesses multiples of the same letter, but only one matches, and it's not the first instance of that letter.
+        # Example: solution - TARES
+        #          guess    - SLEEP  (2nd E should be green)
+        for x in range(0, len(guess)):
+            self.game_state.board.set_tile(row, x, GRAY, guess[x])  # default all tiles to gray
+            if guess[x] == solution[x]:
+                self.game_state.board.set_tile(row, x, GREEN, guess[x])  # exact match on letter and position
+                solution = solution.replace(guess[x], ' ', 1)
+
         for x in range(0, len(guess)):
             if guess[x] in solution:
-                if guess[x] == solution[x]:
-                    self.game_state.board.set_tile(row, x, GREEN, guess[x])  # exact match on letter and position
-                else:
-                    self.game_state.board.set_tile(row, x, YELLOW, guess[x])  # letter matches, but not the position
-
-                # Replace the matched letter in the solution, so we can't match on it again during this check.
+                self.game_state.board.set_tile(row, x, YELLOW, guess[x])  # letter matches, but not the position
                 solution = solution.replace(guess[x], ' ', 1)
-            else:
-                self.game_state.board.set_tile(row, x, GRAY, guess[x])
 
     def _check_winner(self, guess):
         """
@@ -328,7 +332,6 @@ class WordleDiscordHandler(Cog):
                 game = WordleGame()
                 game.game_state.from_dict(json.loads(game_state['json_game_state']))
                 self._active_games[game_state['channel_id']] = game
-                print("Active game loaded: ", game.game_state.solution)
 
     # For the slash commands to register and work properly, we need to bind to particular server (guild) IDs.  There
     # was mention in forums that command will work without explicit server ID binding, but that did not appear to be
