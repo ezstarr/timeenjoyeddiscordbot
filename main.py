@@ -1,10 +1,18 @@
-import logging
 import discord
 import dotenv
+import logging
 import os
+import storage.postgres
 
-logger = logging.getLogger(__name__)
 dotenv.load_dotenv(".env")
+logger = logging.getLogger(__name__)
+
+game_storage = None
+storage_type = os.getenv("STORAGE_TYPE")
+if storage_type:
+    storage_type = storage_type.lower()
+    if storage_type == 'postgres':
+        game_storage = storage.postgres.PostgresStorage()
 
 
 def run_interaction_bot():
@@ -18,12 +26,9 @@ def run_interaction_bot():
     async def on_ready():
         logger.info(f'{bot.user} has logged in.')
 
-    bot.load_extension("wordle.cog")
+    import wordle
+    bot.add_cog(wordle.WordleDiscordHandler(bot, game_storage))
     bot.run(os.getenv('BOT_TOKEN'))
 
 
-try:
-    run_interaction_bot()
-except Exception as ex:
-    logger.error(f"Exception occurred: {ex}")
-
+run_interaction_bot()

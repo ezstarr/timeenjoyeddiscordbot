@@ -3,7 +3,7 @@
 
 This was just a quick side project to have fun with.  
 
-It only has a Wordle clone coded into it.  To play the game, type !wordle 
+It only has a Wordle clone coded into it.  To play the game, type /wordle 
 followed by a 5 letter word to submit a guess.  It will generate an image of 
 the game board and upload that to Discord.  Keep using that command until you either
 win or lose.
@@ -33,7 +33,10 @@ need to be registered with Discord first.
 
 2) Click **Reset Token**.  This will show your **Bot Token**.  Copy this somewhere, you will need it when running the bot.  If you lose it, you'll need to repeat this step and the ones after it again.
 
-3) Under **Privileged Gateway Intents**, ## Todo
+3) Under **Privileged Gateway Intents**, enable:
+   * Presence Intent
+   * Server Members Intent
+   * Message Content Intent
 
 ### Step 3 - Grant Bot Permissions
 1) Click the **OAuth2** menu at the left, then **URL Generator**.
@@ -61,8 +64,10 @@ To deploy to Heroku, clone this repo, and from within the repo folder:
 ```shell
 heroku login
 heroku create [some unique app name]
+heroku addons:create heroku-postgresql:hobby-dev
 heroku config:set BOT_TOKEN=[your Discord Bot Token]
 heroku config:set GUILD_IDS=[your Discord Server ID]
+heroku config:set STORAGE_TYPE=POSTGRES
 git push heroku main 
 ```
 
