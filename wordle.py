@@ -251,25 +251,28 @@ class WordleGame:
         :return: nothing
         """
         row = self.game_state.guess_count
-        # We need a local copy of the solution because we're going to modify it as matches are found.  This is to
-        # handle the case where a solution contains multiples of the same character, and we don't want to match on all
-        # of them unless the user also has multiples of the same letter.
-        solution = self.game_state.solution
+
+        # We want character lists of both the solution and guess so that we can modify the lists to remove characters
+        # that match while looping over them.
+        solution = list(self.game_state.solution)
+        guess = list(guess)  # shadow the passed param as a list so that we can modify it
 
         # Find exact match tiles first, those will be green regardless of order, to handle cases where the user
         # guesses multiples of the same letter, but only one matches, and it's not the first instance of that letter.
-        # Example: solution - TARES
-        #          guess    - SLEEP  (2nd E should be green)
         for x in range(0, len(guess)):
             self.game_state.board.set_tile(row, x, GRAY, guess[x])  # default all tiles to gray
             if guess[x] == solution[x]:
                 self.game_state.board.set_tile(row, x, GREEN, guess[x])  # exact match on letter and position
-                solution = solution.replace(guess[x], ' ', 1)
+                # The letters in solution and guess were used now, so clear them so that they don't end up getting used
+                # again in the partial match loop next.  Make them different so that the empty values can't match.
+                solution[x] = None
+                guess[x] = ' '
 
+        # second pass marks any letters remaining in the guess that weren't exact matches, but are partial matches
         for x in range(0, len(guess)):
             if guess[x] in solution:
                 self.game_state.board.set_tile(row, x, YELLOW, guess[x])  # letter matches, but not the position
-                solution = solution.replace(guess[x], ' ', 1)
+                solution[solution.index(guess[x])] = None
 
     def _check_winner(self, guess):
         """
@@ -337,10 +340,11 @@ class WordleDiscordHandler(Cog):
     # was mention in forums that command will work without explicit server ID binding, but that did not appear to be
     # working during testing.
     guild_ids = []
-    if ',' in os.getenv('GUILD_IDS'):
-        guild_ids = [int(guild_id) for guild_id in os.getenv('GUILD_IDS').split(',')]
-    else:
-        guild_ids = [int(os.getenv('GUILD_IDS'))]
+    if os.getenv(('GUILD_IDS')):
+        if ',' in os.getenv('GUILD_IDS'):
+            guild_ids = [int(guild_id) for guild_id in os.getenv('GUILD_IDS').split(',')]
+        else:
+            guild_ids = [int(os.getenv('GUILD_IDS'))]
 
     @cog_ext.cog_slash(name="wordle_about",
                        description="Info about the wordle bot.",
