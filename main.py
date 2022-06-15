@@ -114,18 +114,19 @@ async def on_ready():
                             break
                         # If it hasn't, assign them the streaming role and send the message.
                         else:
-                            # Gets all the members in your guild.
-                            async for member in guild.fetch_members(limit=None):
-                                # If one of the id's of the members in your guild matches the one from the json and
-                                # they're live, give them the streaming role.
-                                if member.id == int(user_id):
-                                    await member.add_roles(role)
-                            # Sends the live notification to the 'twitch streams' channel then breaks the loop.
-                            await channel.send(
-                                f":red_circle: **LIVE**\n{user.mention} is now streaming on Twitch!"
-                                f"\nhttps://www.twitch.tv/{twitch_name}")
-                            print(f"{user} started streaming. Sending a notification.")
                             break
+                            # Gets all the members in your guild.
+                            # async for member in guild.fetch_members(limit=None):
+                            #     # If one of the id's of the members in your guild matches the one from the json and
+                            #     # they're live, give them the streaming role.
+                            #     if member.id == int(user_id):
+                            #         await member.add_roles(role)
+                            # # Sends the live notification to the 'twitch streams' channel then breaks the loop.
+                            # await channel.send(
+                            #     f":red_circle: **LIVE**\n{user.mention} is now streaming on Twitch!"
+                            #     f"\nhttps://www.twitch.tv/{twitch_name}")
+                            # print(f"{user} started streaming. Sending a notification.")
+                            # break
                 # If they aren't live do this:
                 else:
                     pass
