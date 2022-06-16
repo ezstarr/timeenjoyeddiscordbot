@@ -389,6 +389,10 @@ class WordleDiscordHandler(Cog):
                                                channel_id=ctx.channel_id,
                                                game_state=json.dumps(game.game_state, cls=WordleJSONEncoder))
 
+    # @cog_ext.cog_slash(name="wordle_stats",
+    #                    description = "View how many guesses you won.",
+    #                   guild_ids=guild_ids,)
+
     @staticmethod
     async def _update_board(game: WordleGame, ctx: SlashContext):
         """

@@ -72,3 +72,6 @@ class PostgresStorage(BaseStorage):
                        "on conflict on constraint game_states_game_name_channel_id_key "
                        "do update set game_state=%s ",
                        (game_name, channel_id, game_state, game_state))
+
+
+
