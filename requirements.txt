@@ -9,7 +9,7 @@ discord-py-slash-command==3.0.3
 discord.py==1.7.3
 idna==3.3
 multidict==6.0.2
-Pillow==9.1.0
+Pillow==9.3.0
 psycopg==3.0.12
 python-dotenv==0.20.0
 six==1.16.0
