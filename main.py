@@ -8,11 +8,6 @@ import os
 from datetime import datetime
 import json
 
-intents = discord.Intents.default()
-intents.members = True
-intents.message_content = True
-client = discord.Client(intents=intents)
-tree = app_commands.CommandTree(client)
 
 # Opens .env file
 dotenv.load_dotenv(".env")
@@ -37,17 +32,19 @@ def log_and_print_exception(e):
 
 def run_interaction_bot():
     # from discord.ext import commands
+    intents = discord.Intents.default()
     bot = commands.Bot(command_prefix='!', self_bot=True, intents=discord.Intents.all())
+    tree = app_commands.CommandTree(bot)
 
     @bot.event
     async def on_ready():
         logger.info(f'{bot.user} has logged in.')
 
 
-    @bot.command(name='sync', description='Owner only')
+    @tree.command(name='sync', description='Owner only')
     async def sync(interaction: discord.Interaction, ctx):
         if interaction.user.id == os.getenv('BOT_ID'):
-            await sync()
+            await tree.sync()
             print('Command tree synced.')
         else:
             await ctx.send('You must be the owner to use this command!')
