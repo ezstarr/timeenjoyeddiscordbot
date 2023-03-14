@@ -1,5 +1,6 @@
 import io
 import os
+import asyncio
 import json
 import logging
 import random
@@ -7,8 +8,6 @@ import discord
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 from discord.ext.commands import Bot, Cog
-from discord_slash import cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option
 import storage.base_storage
 
 logger = logging.getLogger(__name__)
@@ -52,7 +51,7 @@ class WordleTile:
 
     def __init__(self):
         self.color = "#333"  # default of a dark gray
-        self.letter = ' '    # default to a space just so the rendering functions doesn't fail
+        self.letter = ' '  # default to a space just so the rendering functions doesn't fail
         self.font_color = "#000000"
 
     def __str__(self):
@@ -217,7 +216,6 @@ class WordleGame:
                           text=message_line,
                           font=message_font)
                 y1 += text_size[1] + (cell_padding * 2)
-
         return image
 
     def _check_valid_word(self, guess):
@@ -339,32 +337,30 @@ class WordleDiscordHandler(Cog):
     # For the slash commands to register and work properly, we need to bind to particular server (guild) IDs.  There
     # was mention in forums that command will work without explicit server ID binding, but that did not appear to be
     # working during testing.
-    guild_ids = []
-    if os.getenv(('GUILD_IDS')):
-        if ',' in os.getenv('GUILD_IDS'):
-            guild_ids = [int(guild_id) for guild_id in os.getenv('GUILD_IDS').split(',')]
-        else:
-            guild_ids = [int(os.getenv('GUILD_IDS'))]
+    # guild_ids = []
+    # if os.getenv(('GUILD_IDS')):
+    #     if ',' in os.getenv('GUILD_IDS'):
+    #         guild_ids = [int(guild_id) for guild_id in os.getenv('GUILD_IDS').split(',')]
+    #     else:
+    #         guild_ids = [int(os.getenv('GUILD_IDS'))]
 
-    @cog_ext.cog_slash(name="wordle_about",
-                       description="Info about the wordle bot.",
-                       guild_ids=guild_ids)
-    async def _about(self, ctx: SlashContext):
-        await ctx.send("https://github.com/scottserven/disgamebot")
+    @discord.app_commands.command(name="wordle_about", description="Info about the wordle bot.")
+    async def _about(self, ctx):
+        await ctx.response.send_message("https://github.com/scottserven/disgamebot")
 
-    @cog_ext.cog_slash(name="wordle",
-                       description="Submit a guess for the current Wordle game.  If there is no active game, "
-                                   "a new one will be started.",
-                       guild_ids=guild_ids,
-                       options=[
-                           create_option(
-                               name="guess",
-                               description="Your 5-letter guess",
-                               option_type=3,  # string
-                               required=True
-                           )
-                       ])
-    async def _guess(self, ctx: SlashContext, **kwargs):
+    @discord.app_commands.command(name="wordle",
+                                description="Submit a guess for the current Wordle game.  If there is no active game, "
+                                            "a new one will be started.",
+                                options=[
+                                    create_option(
+                                        name="guess",
+                                        description="Your 5-letter guess",
+                                        option_type=3,  # string
+                                        required=True)
+                                        ]
+                                )
+
+    async def _guess(self, ctx, **kwargs):
         guess = kwargs.get('guess')
 
         # if a game isn't active, just start a new one
@@ -374,7 +370,7 @@ class WordleDiscordHandler(Cog):
             self._active_games[ctx.channel_id] = game
 
         # Check the user's guess, update the board, and post it to discord
-        game.submit_guess(guess, ctx.author.nick or ctx.author.name)
+        game.submit_guess(guess, ctx.user.nick or ctx.user.name)
         prior_message_id = game.game_state.game_board_message_id
         await self._update_board(game, ctx)
 
@@ -389,12 +385,11 @@ class WordleDiscordHandler(Cog):
                                                channel_id=ctx.channel_id,
                                                game_state=json.dumps(game.game_state, cls=WordleJSONEncoder))
 
-    # @cog_ext.cog_slash(name="wordle_stats",
-    #                    description = "View how many guesses you won.",
-    #                   guild_ids=guild_ids,)
+    # discord.app_commands.command(name="wordle_stats",
+    #                    description = "View how many guesses you won.",)
 
     @staticmethod
-    async def _update_board(game: WordleGame, ctx: SlashContext):
+    async def _update_board(game: WordleGame, ctx):
         """
         Uploads the latest game board image to Discord, and keeps track of the new post in case we need to remove
         it later.
