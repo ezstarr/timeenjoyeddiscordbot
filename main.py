@@ -1,4 +1,5 @@
 import discord
+import asyncio
 from discord import app_commands
 from discord.ext import commands
 import dotenv
@@ -42,8 +43,10 @@ def run_interaction_bot():
 
 
     import wordle
-    bot.add_cog(wordle.WordleDiscordHandler(bot, game_storage))
+    asyncio.run(bot.add_cog(wordle.WordleDiscordHandler(bot, game_storage)))
     bot.run(os.getenv('BOT_TOKEN'))
+
+
 
 
 run_interaction_bot()

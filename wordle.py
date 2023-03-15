@@ -1,6 +1,4 @@
 import io
-import os
-import asyncio
 import json
 import logging
 import random
@@ -346,22 +344,12 @@ class WordleDiscordHandler(Cog):
 
     @discord.app_commands.command(name="wordle_about", description="Info about the wordle bot.")
     async def _about(self, ctx):
-        await ctx.response.send_message("https://github.com/scottserven/disgamebot")
+        await ctx.response.send_message("Use `/wordle` to enter a guess. Made by Kroden.")
 
     @discord.app_commands.command(name="wordle",
-                                description="Submit a guess for the current Wordle game.  If there is no active game, "
-                                            "a new one will be started.",
-                                options=[
-                                    create_option(
-                                        name="guess",
-                                        description="Your 5-letter guess",
-                                        option_type=3,  # string
-                                        required=True)
-                                        ]
-                                )
-
-    async def _guess(self, ctx, **kwargs):
-        guess = kwargs.get('guess')
+                                description="Submit a guess for the current Wordle game. If there is no active game,"
+                                "a new one will be started.", )
+    async def _guess(self, ctx, guess: str):
 
         # if a game isn't active, just start a new one
         game = self._active_games.get(ctx.channel_id)
@@ -398,9 +386,9 @@ class WordleDiscordHandler(Cog):
         :return: nothing
         """
         image = game.render()
-        arr = io.BytesIO()
-        image.save(arr, format="JPEG")
+        arr = io.BytesIO()  # makes an in-memory array behave like a file when it's not actually a file
+        image.save(arr, format="JPEG")  # saves image in-memory
         arr.seek(0)
-        f = discord.File(arr, filename='wordle_board.jpg')
-        game_board_message = await ctx.send(file=f)
+        f = discord.File(arr, filename='wordle_board.jpg')  # creates the "file" representation
+        game_board_message = await (await ctx.client.get_context(ctx)).send(file=f)  # sends representation of the in-memory array to discord
         game.game_state.game_board_message_id = game_board_message.id
