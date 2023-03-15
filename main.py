@@ -32,22 +32,13 @@ def log_and_print_exception(e):
 
 def run_interaction_bot():
     # from discord.ext import commands
-    intents = discord.Intents.default()
-    bot = commands.Bot(command_prefix='!', self_bot=True, intents=discord.Intents.all())
-    tree = app_commands.CommandTree(bot)
+    bot = commands.Bot(command_prefix='', intents=discord.Intents.all())
 
     @bot.event
     async def on_ready():
         logger.info(f'{bot.user} has logged in.')
-
-
-    @tree.command(name='sync', description='Owner only')
-    async def sync(interaction: discord.Interaction, ctx):
-        if interaction.user.id == os.getenv('BOT_ID'):
-            await tree.sync()
-            print('Command tree synced.')
-        else:
-            await ctx.send('You must be the owner to use this command!')
+        await bot.tree.sync()
+        print("Commands synced")
 
 
     import wordle
