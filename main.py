@@ -31,6 +31,8 @@ def log_and_print_exception(e):
     print(f"Exception logged. Error:\n{e}")
 
 
+
+
 def run_interaction_bot():
     # from discord.ext import commands
     bot = commands.Bot(command_prefix='', intents=discord.Intents.all())
@@ -40,7 +42,6 @@ def run_interaction_bot():
         logger.info(f'{bot.user} has logged in.')
         await bot.tree.sync()
         print("Commands synced")
-
 
     import wordle
     asyncio.run(bot.add_cog(wordle.WordleDiscordHandler(bot, game_storage)))

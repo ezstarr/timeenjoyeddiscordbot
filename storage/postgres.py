@@ -23,7 +23,7 @@ class PostgresStorage(BaseStorage):
                        " game_state text,"
                        " unique (game_name, channel_id) "
                        ");")
-
+        # something you add to a table to help look up things faster:
         cursor.execute("create unique index idx_game_channel on game_states (game_name, channel_id)")
 
     def _check_tables(self):
